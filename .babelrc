@@ -1,0 +1,35 @@
+{
+  "presets": [
+    "stage-0",
+    [
+      "env",
+      {
+        "targets": {
+          "browsers": ["last 2 versions", "ie >= 10"]
+        },
+        "debug": true
+      }
+    ]
+  ],
+  "plugins": [
+    "transform-class-properties",
+    "transform-decorators-legacy",
+
+    [
+      "transform-react-jsx",
+      {
+        "pragma": "window.$createElement"
+      }
+    ],
+
+    [
+      "transform-runtime",
+      {
+        "helpers": true,
+        "polyfill": true,
+        "regenerator": true,
+        "moduleName": "babel-runtime"
+      }
+    ]
+  ]
+}

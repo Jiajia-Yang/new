@@ -1,10 +1,10 @@
 
 
-import register from './developing'
-import demo from './example'
+import register from './register'
+import demo from './demo'
 import login from './login'
 import notfound from './notfound'
 import welcome from './welcome'
 import app from './app'
 
-export { register, demo, login, notfound, welcome, app }
+export default { register, demo, login, notfound, welcome, app }

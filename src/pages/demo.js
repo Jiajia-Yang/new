@@ -1,10 +1,6 @@
 import React, { Component } from 'react'
-// import PropTypes from 'prop-types'
-import { } from 'antd'
-// import {connect} from 'react-redux'
-// import {} from '@actions/xxx'
-
-// @connect((storeState)=>({}))
+import { demoApi } from '@apis/index'
+import { demo } from '@actions/demo'
 
 export default class app extends Component {
 

@@ -4,9 +4,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Link, hashHistory } from 'react-router'
 import { message, LocaleProvider, Layout, Menu, Breadcrumb, Row, Col } from 'antd'
-import { validateTickit, parseQueryString } from '@configs/common'
+// import { validateTickit, parseQueryString } from '@configs/common'
 import { headnav } from '@configs/config'
-import { loginByKey } from '@apis/common'
+import { demoApi } from '@apis/index'
 import zhCN from 'antd/lib/locale-provider/zh_CN'
 
 const { Header, Content, Footer } = Layout;

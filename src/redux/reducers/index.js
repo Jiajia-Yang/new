@@ -1,7 +1,7 @@
 import { routerReducer as routing } from 'react-router-redux'
 import { combineReducers } from 'redux'
 
-import * as senga from './demo'
+import * as demo from './demo'
 
 const rootReducer = combineReducers({
   routing,
