@@ -23,7 +23,6 @@ export default class App extends Component {
     
   }
 
-  // 组件已经加载到dom中
   componentDidMount() {
     
   }
@@ -39,7 +38,6 @@ export default class App extends Component {
 
   render() {
     const { location, children } = this.props
-    // console.log(isIframe)
     return (
       <LocaleProvider locale={zhCN}>
        <Layout className="app-layout">
