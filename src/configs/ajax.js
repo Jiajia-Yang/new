@@ -10,7 +10,7 @@ const { CancelToken } = axios
 let baseConfig = {
   // `url` is the server URL that will be used for the request
   url: '/',
-  method: 'post', // default
+  method: 'get', // default
   baseURL: '',
   headers: {
     'Content-Type': 'text/plain',
@@ -68,8 +68,12 @@ export const oftenFetchByPost = (api, options) => {
     } else {
       baseConfig.withCredentials = true
     }
+    let newApi = `${api}?`
+    Object.keys(data).map(key => {
+      newApi += `${key}=${data[key]}&`
+    })
     axios({
-      ...baseConfig, ...options, ...config, url: api, data, cancelToken,
+      ...baseConfig, ...options, ...config, url: newApi, data, cancelToken,
     })
       .then(response => response.data)
       .then((response) => {

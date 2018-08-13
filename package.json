@@ -5,7 +5,7 @@
   "main": "wenpack.config.js",
   "scripts": {
     "start": "webpack-dev-server --config ./webpack.config.js",
-    "mock": "supervisor -w mock ./app/mocks/http.js"
+    "mock": "supervisor -w mock ./src/mocks/http.js"
   },
   "repository": {
     "type": "git",

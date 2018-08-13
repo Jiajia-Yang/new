@@ -5,5 +5,5 @@ module.exports = {
       token: '11111',
     },
     msg: '操作成功',
-    status: 1,
+    code: 0,
   }

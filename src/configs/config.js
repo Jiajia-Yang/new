@@ -11,7 +11,7 @@ let _mockURL = 'http://localhost:1111/'
 
 
 export const serverIp = _serverIp
-export const path = '/merchant'
+export const path = '/mock'
 export const timeout = '15000' // 接口超时限制(ms)
 export const baseURL = _baseURL
 export const mockURL = _mockURL

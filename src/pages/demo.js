@@ -1,15 +1,29 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { hashHistory, Link } from 'react-router'
 import { demoApi } from '@apis/index'
 import { demo } from '@actions/demo'
 
-export default class app extends Component {
+@connect((state, props) => ({
+  config: state.config,
+  demoData: state.demoData,
+}))
+export default class DemoC extends Component {
 
   constructor(props) {
     super(props)
     this.state = {}
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.getDemodata()
+  }
+
+  getDemodata () {
+    this.props.dispatch(demo({id: '222'}, _ => _, err => {
+      throw new Error('message')
+    }))
+  }
 
   render() {
     return (

@@ -14,11 +14,19 @@ http.createServer((req, res) => {
   if (req.method === 'OPTIONS') {
     res.end(null)
   }
+
+  if (req.method === 'GET') {
+    const url = req.url.split('?')[0]
+    const originData = _map[url] ? Mock.mock(_map[url]) : ''
+
+    setTimeout(() => {
+        res.end(JSON.stringify(originData))
+      }, parseInt(((Math.random() - 0.5) + 1) * 500), 10) // 0-2s的随机数
+  }
   if (req.method === 'POST') {
     let postData = ''
     req.addListener('data', dataBuffer => postData += dataBuffer)
     req.addListener('end', () => {
-      console.log('url=>', req.url)
       postData = JSON.parse(postData)
       const originData = _map[req.url]
         ? Mock.mock(_map[req.url])
@@ -28,7 +36,6 @@ http.createServer((req, res) => {
         : originData
       // const data = originData
       setTimeout(() => {
-        console.log(data)
         res.end(JSON.stringify(data))
       }, parseInt(((Math.random() - 0.5) + 1) * 500), 10) // 0-2s的随机数
     })

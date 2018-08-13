@@ -1,7 +1,7 @@
 import { handleActions } from 'redux-actions'
 
 const initState = () => ({ })
-export const loginResponse = handleActions({
+export const demoData = handleActions({
   'request demo'(state, action) {
     return { ...state, loading: true }
   },
