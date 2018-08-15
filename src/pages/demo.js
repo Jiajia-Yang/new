@@ -25,10 +25,12 @@ export default class DemoC extends Component {
     }))
   }
 
+
+
   render() {
     return (
       <div className="page">
-        示范页面
+        llll
       </div>
     )
   }

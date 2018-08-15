@@ -7,148 +7,93 @@ import { parseQueryString } from './common'
 
 const { CancelToken } = axios
 
-let baseConfig = {
-  // `url` is the server URL that will be used for the request
-  url: '/',
-  method: 'get', // default
-  baseURL: '',
-  headers: {
-    'Content-Type': 'text/plain',
-    // 'X-Requested-With': 'XMLHttpRequest',
-  },
-  params: {
-  },
-  data: {
-  },
-  timeout: '',
-  withCredentials: true, // default
-  responseType: 'json', // default
-  maxContentLength: 2000,
-  validateStatus(status) {
-    return status >= 200 && status < 300 // default
-  },
+const successCb = (response, success, failure) => {
+  switch (response.status) {
+    case 1: 
+      success && success(response)
+      break
+    case 0: 
+      typeof failure === 'function' ? failure(response) : message.error(response.msg)
+      break
+    case -1: 
+      typeof failure === 'function' && failure(response)
+      message.warning(response.msg)
+      hashHistory.replace('/login')
+      break
+    default: 
+      typeof failure === 'function' ? failure(response) : message.warning('服务器返回参数无法识别')
+  }
 }
 
-baseConfig = { ...baseConfig, timeout: timeout, baseURL: baseURL }
+const failCb = e => {
+  if (axios.isCancel(e)) {
+    if (process.env.NODE_ENV !== 'production') console.log('Request canceled', e.message)
+  } else {
+    console.dir(e)
+    if (typeof failure === 'function') {
+      e.code === 'ECONNABORTED' ? failure({
+        data: '',
+        msg: '服务器连接超时',
+        status: 0,
+      }) : failure({
+        data: '',
+        msg: e.message,
+        status: 0,
+      })
+    }
+  }
+}
 
-export const oftenFetchByPost = (api, options) => {
-  // 当api参数为createApi创建的返回值
+export const oftenFetch = (api, options, baseConfig) => {
   if (typeof api === 'function') return api
-  return (...rest) => { // 参数:(data:Object,sucess?:Function,failure?:Function,config?:Object)
-    // 参数分析
+  return  (...rest) => {
     const data = rest[0] || {}
     const token = sessionStorage.getItem('token')
-    if (token) {
-      // data.token = token
-    }
+    token && data.token = token
     let success = null
     let failure = null
     let config = null
-    for (let i = 1; i < rest.length; i += 1) {
-      if (typeof rest[i] === 'function') {
-        if (!success) {
-          success = rest[i]
-        } else {
-          failure = rest[i]
-        }
-      }
-      if (Object.prototype.toString.call(rest[i]) === '[object Object]') {
-        config = rest[i]
-      }
-    }
-
-    const hooks = {
-      abort: null,
-    }
-
+    rest.map(item => {
+      if (typeof item === 'function') !success ? success = item : failure = item
+      if (Object.prototype.toString.call(rest[i]) === '[object Object]') config = item
+    })
+    const hooks = { abort: null }
     const cancelToken = new CancelToken((c) => { hooks.abort = c })
-    // 如果是用的30上的mock的服务，那么就默认不带cookie到服务器
     if (options && (options.baseURL.indexOf('12602') !== -1)) {
       baseConfig.withCredentials = false
     } else {
       baseConfig.withCredentials = true
     }
-    let newApi = `${api}?`
-    Object.keys(data).map(key => {
-      newApi += `${key}=${data[key]}&`
-    })
+    let apiEdit = api
+    if (baseConfig.method === 'get') {
+      apiEdit = `${api}?`
+      apiEdit = Object.keys(data).map(key => `${key}=${data[key]}`).join('&')
+    }
     axios({
-      ...baseConfig, ...options, ...config, url: newApi, data, cancelToken,
-    })
-      .then(response => response.data)
-      .then((response) => {
-        switch (response.status) {
-          case 1: { success && success(response); break }
-          case 0: {
-            // message.warning(response.msg)
-            // failure && failure(response)
-            if (typeof failure === 'function') {
-              failure(response)
-            } else {
-              // eslint-disable-next-line
-              if (response.msg === '系统内部错误!') {
-                message.error(response.msg)
-              } else {
-                message.warning(response.msg)
-              }
-            }
-            break
-          }
-          case -1: {
-            if (typeof failure === 'function') {
-              failure(response)
-            }
-            message.warning(response.msg)
-            hashHistory.replace('/login')
-            break
-          }
-          default: {
-            if (typeof failure === 'function') {
-              failure(response)
-            } else {
-              message.warning('服务器返回参数无法识别')
-            }
-          }
-        }
-      })
-      .catch((e) => {
-        if (axios.isCancel(e)) {
-          if (process.env.NODE_ENV !== 'production') {
-            console.log('Request canceled', e.message)
-          }
-        } else {
-          console.dir(e)
-          if (typeof failure === 'function') {
-            if (e.code === 'ECONNABORTED') { // 超时的报错
-              failure({
-                data: '',
-                msg: '服务器连接超时',
-                status: 0,
-              })
-            } else {
-              failure({
-                data: '',
-                msg: e.message,
-                status: 0,
-              })
-            }
-          }
-        }
-      })
+      ...baseConfig, ...options, ...config, url: apiEdit, data, cancelToken,
+    }).then(response => response.data).then(response => successCb(response, success, failure)).catch(failCb)
     return hooks
   }
 }
 
-// 创建发起api的启动器
-export const createApi = function (api, options) {
-  const obj = parseQueryString(window.location.href)
-  let url = api
-  if (obj.key) {
-    url = `${api}?key=${obj.key}`
-    if (obj.sourceName) {
-      url = `${api}?key=${obj.key}&sourceName=${obj.sourceName}`
-    }
-  }
-  return oftenFetchByPost(`${url}`, options)
+let baseConfig = {
+  url: '/',
+  method: 'get',
+  baseURL: '',
+  headers: { 'Content-Type': 'text/plain' },
+  params: {},
+  data: {},
+  timeout: '',
+  withCredentials: true,
+  responseType: 'json',
+  maxContentLength: 2000,
+  timeout: timeout,
+  baseURL: baseURL,
+  validateStatus: status => status >= 200 && status < 300
 }
 
+
+export const createApi = function (method, api, options) {
+  baseConfig.method = method
+  return oftenFetch(api, options, baseConfig)
+}

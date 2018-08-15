@@ -4,4 +4,8 @@ import { mockURL, baseURL, path } from '@config'
 
 const option = { baseURL: mockURL }
 
-export const demoApi = createApi(`${path}/data/demo`, option) // demo
+export const demoApi = createApi('get', `${path}/data/demo`, option) // demo
+
+
+
+

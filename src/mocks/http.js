@@ -20,17 +20,15 @@ http.createServer((req, res) => {
     const originData = _map[url] ? Mock.mock(_map[url]) : ''
 
     setTimeout(() => {
-        res.end(JSON.stringify(originData))
-      }, parseInt(((Math.random() - 0.5) + 1) * 500), 10) // 0-2s的随机数
+      res.end(JSON.stringify(originData))
+    }, parseInt(((Math.random() - 0.5) + 1) * 500), 10) // 0-2s的随机数
   }
   if (req.method === 'POST') {
     let postData = ''
     req.addListener('data', dataBuffer => postData += dataBuffer)
     req.addListener('end', () => {
       postData = JSON.parse(postData)
-      const originData = _map[req.url]
-        ? Mock.mock(_map[req.url])
-        : ''
+      const originData = _map[req.url] ? Mock.mock(_map[req.url]) : ''
       const data = typeof (_filter[req.url]) === 'function'
         ? _filter[req.url](originData, postData)
         : originData
